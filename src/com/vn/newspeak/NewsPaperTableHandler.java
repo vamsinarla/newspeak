@@ -1,7 +1,10 @@
 package com.vn.newspeak;
 
+import java.util.ArrayList;
+
 import android.content.ContentValues;
 import android.content.Context;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
 import android.util.Log;
@@ -57,4 +60,46 @@ public class NewsPaperTableHandler {
 			Log.e("NewsPaperTableHandler::populateTable", "Could not populate the table");
 		}
 	}
+	/*
+	public Cursor prepareDataForListAdapter() {
+		Cursor result;
+		try {
+			db = appCtx.openOrCreateDatabase(databaseName, Context.MODE_PRIVATE, null);
+			result = db.query(tableName, 
+					//new String [] { "NewsPaperName", "Category", "Subscribed" },
+					null,
+					null, 
+					null,
+					null,
+					null,
+					null);
+			
+			int newsPaperNameIndex = result.getColumnIndex("NewsPaperName");			
+			int categoryIndex = result.getColumnIndex("Category");
+			int subscribedIndex = result.getColumnIndex("Subscribed");
+			result.moveToFirst();
+			
+			ArrayList<Feed> adapterData = new ArrayList<Feed>();
+			Feed feed;
+			while (!result.isAfterLast()) {
+				 feed = new Feed();
+				 feed.newsPaper = result.getString(newsPaperNameIndex);
+				 feed.category = result.getString(categoryIndex);
+				 feed.subscribed = result.getInt(subscribedIndex);
+				 
+				 adapterData.add(feed);
+				 result.moveToNext();
+			}
+			
+			// result.close();
+			db.close();
+		} catch (SQLiteException exception) {
+			Log.e("NewsPaperTableHandler::prepareDataForListAdapter", "Failed to prepare data for list adapter.");
+		}
+		catch (Exception exception) {
+			Log.e("Exception!!!", exception.getMessage());
+		}
+		
+		return result;
+	} */
 }

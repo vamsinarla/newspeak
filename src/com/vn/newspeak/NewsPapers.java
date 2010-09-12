@@ -2,37 +2,42 @@ package com.vn.newspeak;
 
 import android.app.ExpandableListActivity;
 import android.content.SharedPreferences;
+import android.database.Cursor;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.ExpandableListAdapter;
+import android.widget.ExpandableListView;
 
 public class NewsPapers extends ExpandableListActivity {
     
 	private static final String firstRun = "FIRST_RUN";
 	
-	ExpandableListAdapter mNewsPaperListAdapter;
+	NewsPaperListAdapter newsPaperListAdapter;
+	ExpandableListView newsPaperListView;
 	
 	/** Called when the activity is first created. */
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         
+        NewsPaperTableHandler newsPaperTable = new NewsPaperTableHandler(this);
+    	
         // Check if this is the first time the app is being run
         if (isFirstRun()) {
         	// This is the first run so create the DB and tables
-        	NewsPaperTableHandler newsPaperTable = new NewsPaperTableHandler(this);
         	newsPaperTable.createTable();
         	newsPaperTable.populateTable();
         	Log.d("NewsPapers::onCreate", "App initialization done");
         }
         else {
         	// Populate the list adapter to show entries
-        	
+        	// Cursor cursor = newsPaperTable.prepareDataForListAdapter();
         }
-        
-        // mNewsPaperListAdapter = new NewsPaperListAdapater(this);
-        // setListAdapter(mNewsPaperListAdapter);
-    }
+        newsPaperListView = (ExpandableListView) this.findViewById(R.layout.main_parent);
+        newsPaperListView.setAdapter(newsPaperListAdapter);
+        // setListAdapter(newsPaperListAdapter);
+        this.setContentView(newsPaperListView);
+        }
     
     private boolean isFirstRun() {
     	
