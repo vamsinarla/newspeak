@@ -1,6 +1,7 @@
 package com.vn.newspeak;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 
 import android.content.ContentValues;
 import android.content.Context;
@@ -60,46 +61,94 @@ public class NewsPaperTableHandler {
 			Log.e("NewsPaperTableHandler::populateTable", "Could not populate the table");
 		}
 	}
-	/*
-	public Cursor prepareDataForListAdapter() {
+	
+	public ArrayList<String> getNewsPaperNames() {
 		Cursor result;
+		ArrayList<String> newsPaperNames = new ArrayList<String>(); 
+		
 		try {
 			db = appCtx.openOrCreateDatabase(databaseName, Context.MODE_PRIVATE, null);
-			result = db.query(tableName, 
-					//new String [] { "NewsPaperName", "Category", "Subscribed" },
+			result = db.query(true,
+					tableName,
+					new String[] { "NewsPaperName" },
 					null,
-					null, 
+					null,
 					null,
 					null,
 					null,
 					null);
-			
-			int newsPaperNameIndex = result.getColumnIndex("NewsPaperName");			
-			int categoryIndex = result.getColumnIndex("Category");
-			int subscribedIndex = result.getColumnIndex("Subscribed");
+						
 			result.moveToFirst();
 			
-			ArrayList<Feed> adapterData = new ArrayList<Feed>();
-			Feed feed;
-			while (!result.isAfterLast()) {
-				 feed = new Feed();
-				 feed.newsPaper = result.getString(newsPaperNameIndex);
-				 feed.category = result.getString(categoryIndex);
-				 feed.subscribed = result.getInt(subscribedIndex);
-				 
-				 adapterData.add(feed);
-				 result.moveToNext();
+			int newsPaperNameIndex = result.getColumnIndex("NewsPaperName");			
+			while(!result.isAfterLast()) {
+				newsPaperNames.add(result.getString(newsPaperNameIndex));
+				result.moveToNext();
 			}
 			
-			// result.close();
+			result.close();
 			db.close();
 		} catch (SQLiteException exception) {
-			Log.e("NewsPaperTableHandler::prepareDataForListAdapter", "Failed to prepare data for list adapter.");
+			Log.e("NewsPaperTableHandler::getNewsPaperNames", "Failed to get newspaper names");
 		}
 		catch (Exception exception) {
-			Log.e("Exception!!!", exception.getMessage());
+			Log.e("NewsPaperTableHandler::getNewsPaperNames", exception.getMessage());
 		}
 		
-		return result;
-	} */
+		return newsPaperNames;
+	}
+	
+	public ArrayList<ArrayList<Feed>> getCategoriesForNewsPapers(ArrayList<String> newsPaperNames) {
+		Cursor result = null;
+		ArrayList<ArrayList<Feed>> categories = new ArrayList<ArrayList<Feed>>();
+		ArrayList<Feed> category = new ArrayList<Feed>();
+		
+		try {
+			db = appCtx.openOrCreateDatabase(databaseName, Context.MODE_PRIVATE, null);
+			
+			for (String newsPaper : newsPaperNames) {
+				result = db.query(tableName,
+							new String[] { "Category", "Subscribed" },
+							"NewsPaperName=?",
+							new String [] { newsPaper },
+							null,
+							null,
+							null
+							);
+				result.moveToFirst();
+				Feed feed = new Feed();
+				
+				int categoryIndex = result.getColumnIndex("Category");
+				int subscribedIndex = result.getColumnIndex("Subscribed");
+				
+				// Add to corresponding array list
+				while (!result.isAfterLast()) {
+					feed.setCategory(result.getString(categoryIndex));
+					feed.setSubscribed(result.getInt(subscribedIndex));
+					
+					category.add(feed);
+					result.moveToNext();
+				}
+				categories.add(category);
+			}
+			result.close();
+			db.close();
+			
+		} catch (SQLiteException exception) {
+			Log.e("NewsPaperTableHandler::getCategoriesForNewsPapers", "Categories could not be got " + exception.getMessage());
+		}
+		catch (Exception exception) {
+			Log.e("NewsPaperTableHandler::getCategoriesForNewsPapers", exception.getMessage());
+		}
+		
+		return categories;
+	}
+	
+	public void prepareDataForAdapter(NewsPaperListAdapter adapter) {
+		ArrayList<String> newsPapers = getNewsPaperNames();
+		ArrayList<ArrayList<Feed>> categories = getCategoriesForNewsPapers(newsPapers);
+		
+		adapter.setData(newsPapers, categories);
+	}
+	
 }

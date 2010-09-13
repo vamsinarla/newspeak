@@ -1,8 +1,8 @@
 package com.vn.newspeak;
 
+import java.util.ArrayList;
 
 import android.content.Context;
-import android.database.sqlite.SQLiteDatabase;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,23 +14,12 @@ import android.widget.TextView;
 public class NewsPaperListAdapter extends BaseExpandableListAdapter {
 	
 	private Context appCtx;
-	private SQLiteDatabase db;
-	private String databaseName;
-	private String feedsTable; 
 	
-	private String[] groups = { "People Names", "Dog Names", "Cat Names", "Fish Names" };
-    private String[][] children = {
-            { "Arnold", "Barry", "Chuck", "David" },
-            { "Ace", "Bandit", "Cha-Cha", "Deuce" },
-            { "Fluffy", "Snuggles" },
-            { "Goldy", "Bubbles" }
-    };
+	private ArrayList<String> newsPapers;
+	private ArrayList<ArrayList<Feed>> categories;
     
 	public NewsPaperListAdapter(Context ctx) {
 		appCtx = ctx;
-		databaseName = appCtx.getString(R.string.databaseName);
-		feedsTable = appCtx.getString(R.string.feedsTable);
-		
 	}
 	
 	public boolean hasStableIds() {
@@ -39,7 +28,8 @@ public class NewsPaperListAdapter extends BaseExpandableListAdapter {
 
 	@Override
 	public Object getChild(int groupPosition, int childPosition) {
-		return children[groupPosition][childPosition];
+		Feed feed = categories.get(groupPosition).get(childPosition);
+		return feed;
 	}
 
 	@Override
@@ -79,24 +69,26 @@ public class NewsPaperListAdapter extends BaseExpandableListAdapter {
 	public View getChildView(int groupPosition, int childPosition,
 			boolean isLastChild, View convertView, ViewGroup parent) {
 	    CheckBox checkBox = getGenericView2();
-        checkBox.setText("Checkbox!");
         
+	    Feed feed = categories.get(groupPosition).get(childPosition);
+	    checkBox.setText(feed.getCategory());
+	    checkBox.setChecked(feed.getSubscribed() == 0 ? false : true);
         return checkBox;
     }
 
 	@Override
 	public int getChildrenCount(int groupPosition) {
-		return children[groupPosition].length;
+		return categories.get(groupPosition).size();
 	}
 
 	@Override
 	public Object getGroup(int groupPosition) {
-		return groups[groupPosition];
+		return newsPapers.get(groupPosition);
 	}
 
 	@Override
 	public int getGroupCount() {
-		return groups.length;
+		return newsPapers.size();
 	}
 
 	@Override
@@ -117,5 +109,9 @@ public class NewsPaperListAdapter extends BaseExpandableListAdapter {
 		return true;
 	}
 	
+	public void setData(ArrayList<String> newsPapers, ArrayList<ArrayList<Feed>> categories) {
+		this.newsPapers = newsPapers;
+		this.categories = categories;
+	}
 
 }

@@ -5,6 +5,7 @@ import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 import android.widget.ExpandableListAdapter;
 import android.widget.ExpandableListView;
 
@@ -21,7 +22,8 @@ public class NewsPapers extends ExpandableListActivity {
         super.onCreate(savedInstanceState);
         
         NewsPaperTableHandler newsPaperTable = new NewsPaperTableHandler(this);
-    	
+        newsPaperListAdapter = new NewsPaperListAdapter(this);
+        
         // Check if this is the first time the app is being run
         if (isFirstRun()) {
         	// This is the first run so create the DB and tables
@@ -29,15 +31,23 @@ public class NewsPapers extends ExpandableListActivity {
         	newsPaperTable.populateTable();
         	Log.d("NewsPapers::onCreate", "App initialization done");
         }
-        else {
-        	// Populate the list adapter to show entries
-        	// Cursor cursor = newsPaperTable.prepareDataForListAdapter();
-        }
-        newsPaperListView = (ExpandableListView) this.findViewById(R.layout.main_parent);
-        newsPaperListView.setAdapter(newsPaperListAdapter);
-        // setListAdapter(newsPaperListAdapter);
-        this.setContentView(newsPaperListView);
-        }
+        
+        newsPaperTable.prepareDataForAdapter(newsPaperListAdapter);
+        setListAdapter(newsPaperListAdapter);
+        
+        newsPaperListView = this.getExpandableListView();
+        ExpandableListView.OnChildClickListener onChildClickListener = new ExpandableListView.OnChildClickListener() {
+			
+			@Override
+			public boolean onChildClick(ExpandableListView parent, View v,
+					int groupPosition, int childPosition, long id) {
+				Log.d("childlistener", "clicked on " + Integer.toString(groupPosition) + Integer.toString(childPosition));
+				return true;
+			}
+		};
+		
+        newsPaperListView.setOnChildClickListener(onChildClickListener);
+    }
     
     private boolean isFirstRun() {
     	
