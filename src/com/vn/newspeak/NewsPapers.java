@@ -2,26 +2,22 @@ package com.vn.newspeak;
 
 import android.app.ExpandableListActivity;
 import android.content.SharedPreferences;
-import android.database.Cursor;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.View;
-import android.widget.ExpandableListAdapter;
-import android.widget.ExpandableListView;
 
 public class NewsPapers extends ExpandableListActivity {
     
 	private static final String firstRun = "FIRST_RUN";
 	
-	NewsPaperListAdapter newsPaperListAdapter;
-	ExpandableListView newsPaperListView;
+	private NewsPaperListAdapter newsPaperListAdapter;
+	private NewsPaperTableHandler newsPaperTable;
 	
 	/** Called when the activity is first created. */
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         
-        NewsPaperTableHandler newsPaperTable = new NewsPaperTableHandler(this);
+        newsPaperTable = new NewsPaperTableHandler(this);
         newsPaperListAdapter = new NewsPaperListAdapter(this);
         
         // Check if this is the first time the app is being run
@@ -32,21 +28,10 @@ public class NewsPapers extends ExpandableListActivity {
         	Log.d("NewsPapers::onCreate", "App initialization done");
         }
         
-        newsPaperTable.prepareDataForAdapter(newsPaperListAdapter);
+        AdapterData data = newsPaperTable.prepareDataForAdapter();
+        newsPaperListAdapter.setData(data);
+        newsPaperListAdapter.setTableHandler(newsPaperTable);
         setListAdapter(newsPaperListAdapter);
-        
-        newsPaperListView = this.getExpandableListView();
-        ExpandableListView.OnChildClickListener onChildClickListener = new ExpandableListView.OnChildClickListener() {
-			
-			@Override
-			public boolean onChildClick(ExpandableListView parent, View v,
-					int groupPosition, int childPosition, long id) {
-				Log.d("childlistener", "clicked on " + Integer.toString(groupPosition) + Integer.toString(childPosition));
-				return true;
-			}
-		};
-		
-        newsPaperListView.setOnChildClickListener(onChildClickListener);
     }
     
     private boolean isFirstRun() {
@@ -62,5 +47,9 @@ public class NewsPapers extends ExpandableListActivity {
     	}
     	
     	return !result;
+    }
+    
+    public NewsPaperTableHandler getNewsPaperTableHandler() {
+    	return this.newsPaperTable;
     }
 }

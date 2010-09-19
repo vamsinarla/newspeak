@@ -144,11 +144,26 @@ public class NewsPaperTableHandler {
 		return categories;
 	}
 	
-	public void prepareDataForAdapter(NewsPaperListAdapter adapter) {
+	public AdapterData prepareDataForAdapter() {
 		ArrayList<String> newsPapers = getNewsPaperNames();
-		ArrayList<ArrayList<Feed>> categories = getCategoriesForNewsPapers(newsPapers);
 		
-		adapter.setData(newsPapers, categories);
+		AdapterData data = new AdapterData();
+		data.setNewsPapers(newsPapers);
+		data.setCategories(getCategoriesForNewsPapers(newsPapers));
+		
+		return data;
 	}
 	
+	public boolean updateQuery(ContentValues values, String whereClause, String[] whereArgs) {
+		int numRows = 0;
+		try {
+			db = appCtx.openOrCreateDatabase(databaseName, Context.MODE_PRIVATE, null);
+			numRows = db.update(tableName, values, whereClause, whereArgs);
+			db.close();
+		} catch (SQLiteException exception) {
+			Log.d("NewsPaperTableHandler::updateQuery", "Update checkbox failed" + exception.getMessage());
+		}
+		return numRows == 1 ? true : false;
+	}
+ 	
 }
