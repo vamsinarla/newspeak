@@ -1,6 +1,13 @@
 package com.vn.newspeak;
 
-public class Feed {
+import java.io.Serializable;
+
+public class Feed implements Serializable {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	
 	public String getNewsPaper() {
 		return newsPaper;
 	}

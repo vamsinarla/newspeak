@@ -2,8 +2,10 @@ package com.vn.newspeak;
 
 import java.util.ArrayList;
 
+import android.content.ActivityNotFoundException;
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.Intent;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
@@ -155,7 +157,19 @@ public class NewsPaperListAdapter extends BaseExpandableListAdapter implements V
 			feed.setSubscribed(newState == false ? 0 : 1);
 			newsPaperTable.updateQuery(newValues, whereClause, whereArgs);
 			
-		} catch (Exception exception) {
+			// For now we have the click here showing the list activity ahead. 
+			// Prepare an intent and call the list activity
+			Intent listArticlesInFeed = new Intent();
+			listArticlesInFeed.setClass(appCtx, ArticlesList.class);
+			
+			// listArticlesInFeed.putExtra("com.vn.newspeak.ArticlesList", "FeedMe");
+			listArticlesInFeed.putExtra("com.vn.newspeak.ArticlesList", feed);
+			appCtx.startActivity(listArticlesInFeed);
+
+		} catch (ActivityNotFoundException exception) {
+			Log.e("NewsPaperListAdapter::onClick", exception.getMessage());
+		}
+		catch (Exception exception) {
 			Log.e("NewsPaperListAdapter::onClick", exception.getMessage());
 		}
 	}

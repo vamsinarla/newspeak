@@ -3,4 +3,11 @@
     <string name="app_name">NewSpeak</string>
     <string name="databaseName">NewsPapers</string>
     <string name="feedsTable">FeedsTable</string>
+    
+    <string name="article_title">title</string>
+    <string name="article_description">description</string>
+    <string name="article_link">link</string>
+    <string name="article_date">pubDate</string>
+    <string name="article_item">item</string>
+    
 </resources>

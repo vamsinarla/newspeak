@@ -24,6 +24,11 @@ public final class R {
     }
     public static final class string {
         public static final int app_name=0x7f040000;
+        public static final int article_date=0x7f040006;
+        public static final int article_description=0x7f040004;
+        public static final int article_item=0x7f040007;
+        public static final int article_link=0x7f040005;
+        public static final int article_title=0x7f040003;
         public static final int databaseName=0x7f040001;
         public static final int feedsTable=0x7f040002;
     }

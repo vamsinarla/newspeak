@@ -52,4 +52,5 @@ public class NewsPapers extends ExpandableListActivity {
     public NewsPaperTableHandler getNewsPaperTableHandler() {
     	return this.newsPaperTable;
     }
+    
 }

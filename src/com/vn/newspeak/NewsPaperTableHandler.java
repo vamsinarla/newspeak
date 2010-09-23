@@ -1,7 +1,6 @@
 package com.vn.newspeak;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 
 import android.content.ContentValues;
 import android.content.Context;
@@ -108,7 +107,7 @@ public class NewsPaperTableHandler {
 			
 			for (String newsPaper : newsPaperNames) {
 				result = db.query(tableName,
-							new String[] { "Category", "Subscribed" },
+							new String[] { "Category", "FeedURL", "Subscribed" },
 							"NewsPaperName=?",
 							new String [] { newsPaper },
 							null,
@@ -120,10 +119,12 @@ public class NewsPaperTableHandler {
 				
 				int categoryIndex = result.getColumnIndex("Category");
 				int subscribedIndex = result.getColumnIndex("Subscribed");
-				
+				int feedUrlIndex = result.getColumnIndex("FeedURL");
 				// Add to corresponding array list
 				while (!result.isAfterLast()) {
+					feed.setNewsPaper(newsPaper);
 					feed.setCategory(result.getString(categoryIndex));
+					feed.setFeedURL(result.getString(feedUrlIndex));
 					feed.setSubscribed(result.getInt(subscribedIndex));
 					
 					category.add(feed);
@@ -132,7 +133,7 @@ public class NewsPaperTableHandler {
 				categories.add(category);
 			}
 			result.close();
-			db.close();
+			db.close	();
 			
 		} catch (SQLiteException exception) {
 			Log.e("NewsPaperTableHandler::getCategoriesForNewsPapers", "Categories could not be got " + exception.getMessage());
@@ -161,7 +162,7 @@ public class NewsPaperTableHandler {
 			numRows = db.update(tableName, values, whereClause, whereArgs);
 			db.close();
 		} catch (SQLiteException exception) {
-			Log.d("NewsPaperTableHandler::updateQuery", "Update checkbox failed" + exception.getMessage());
+			Log.e("NewsPaperTableHandler::updateQuery", "Update checkbox failed" + exception.getMessage());
 		}
 		return numRows == 1 ? true : false;
 	}

@@ -11,8 +11,13 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
-    </application>
-
-
+		<activity android:name=".ArticlesList">
+			<intent-filter>
+				<category android:name="android.intent.category.DEFAULT" />
+			</intent-filter>
+		</activity>
+		
+	</application>
+	
+	<uses-permission android:name="android.permission.INTERNET"></uses-permission>
 </manifest> 
