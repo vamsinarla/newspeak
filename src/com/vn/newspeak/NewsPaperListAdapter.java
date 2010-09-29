@@ -3,7 +3,6 @@ package com.vn.newspeak;
 import java.util.ArrayList;
 
 import android.content.ActivityNotFoundException;
-import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
@@ -12,20 +11,24 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
 import android.widget.BaseExpandableListAdapter;
-import android.widget.CheckBox;
+import android.widget.ImageView;
 import android.widget.TextView;
 
-public class NewsPaperListAdapter extends BaseExpandableListAdapter implements View.OnClickListener {
+public class NewsPaperListAdapter extends BaseExpandableListAdapter {
 	
 	private Context appCtx;
 	
 	private ArrayList<String> newsPapers;
 	private ArrayList<ArrayList<Feed>> categories;
-
-	private NewsPaperTableHandler newsPaperTable;
-    
+	private ArrayList<Integer> newsPaperIconIds;
+	
 	public NewsPaperListAdapter(Context ctx) {
 		appCtx = ctx;
+		
+		// Set the image resource IDs for the Newspaper icons
+		newsPaperIconIds = new ArrayList<Integer>();
+		newsPaperIconIds.add(R.drawable.the_new_york_times_logo);
+		newsPaperIconIds.add(R.drawable.wall_street_journal_logo);
 	}
 	
 	public boolean hasStableIds() {
@@ -57,7 +60,7 @@ public class NewsPaperListAdapter extends BaseExpandableListAdapter implements V
         return textView;
     }
 	
-	public CheckBox getGenericView2() {
+	/*public CheckBox getGenericView2() {
         // Layout parameters for the ExpandableListView
         AbsListView.LayoutParams lp = new AbsListView.LayoutParams(
                 ViewGroup.LayoutParams.FILL_PARENT, 64);
@@ -86,8 +89,22 @@ public class NewsPaperListAdapter extends BaseExpandableListAdapter implements V
 	    
 	    checkBox.setOnClickListener(this);
 	    return checkBox;
-    }
-
+    } */
+	
+	@Override
+	public View getChildView(int groupPosition, int childPosition,
+			boolean isLastChild, View convertView, ViewGroup parent) {
+				
+		TextView textView = getGenericView();
+		
+		Feed feed = categories.get(groupPosition).get(childPosition);
+		
+		textView.setText(feed.getCategory());
+		textView.setOnClickListener(new OnChildClickListener(appCtx, feed));
+		
+		return textView;
+	}
+	
 	@Override
 	public int getChildrenCount(int groupPosition) {
 		return categories.get(groupPosition).size();
@@ -112,10 +129,21 @@ public class NewsPaperListAdapter extends BaseExpandableListAdapter implements V
 	public View getGroupView(int groupPosition, boolean isExpanded,
 			View convertView, ViewGroup parent) {
     
-		TextView textView = getGenericView();
+		/*TextView textView = getGenericView();
 		textView.setText(getGroup(groupPosition).toString());
     
-		return textView;
+		return textView;*/
+		
+		// Instantiate an ImageView and define its properties
+	    ImageView i = new ImageView(appCtx);
+	    i.setImageResource(newsPaperIconIds.get(groupPosition));
+	    i.setAdjustViewBounds(true); // set the ImageView bounds to match the Drawable's dimensions
+	    i.setLayoutParams(new AbsListView.LayoutParams(AbsListView.LayoutParams.FILL_PARENT ,
+	    		AbsListView.LayoutParams.FILL_PARENT));
+	    
+	    i.setPadding(36, 0, 0, 0);
+	    
+		return i;
 	}
 
 	@Override
@@ -128,7 +156,7 @@ public class NewsPaperListAdapter extends BaseExpandableListAdapter implements V
 		this.categories = data.getCategories();
 	}
 	
-	@Override
+	/* @Override
 	public void onClick(View v) {
 		// Probably should add a check to see if its any other control
 		CheckBox checkBox = (CheckBox) v;
@@ -162,7 +190,6 @@ public class NewsPaperListAdapter extends BaseExpandableListAdapter implements V
 			Intent listArticlesInFeed = new Intent();
 			listArticlesInFeed.setClass(appCtx, ArticlesList.class);
 			
-			// listArticlesInFeed.putExtra("com.vn.newspeak.ArticlesList", "FeedMe");
 			listArticlesInFeed.putExtra("com.vn.newspeak.ArticlesList", feed);
 			appCtx.startActivity(listArticlesInFeed);
 
@@ -172,9 +199,34 @@ public class NewsPaperListAdapter extends BaseExpandableListAdapter implements V
 		catch (Exception exception) {
 			Log.e("NewsPaperListAdapter::onClick", exception.getMessage());
 		}
-	}
+	} */
 
 	public void setTableHandler(NewsPaperTableHandler newsPaperTable) {
-		this.newsPaperTable = newsPaperTable;
+	}
+	
+	private class OnChildClickListener implements View.OnClickListener {
+
+		Feed mFeed;
+		
+		OnChildClickListener(Context appCtx, Feed feed) {
+			this.mFeed = feed;
+		}
+		
+		@Override
+		public void onClick(View v) {
+
+			try {
+				// For now we have the click here showing the list activity ahead. 
+				// Prepare an intent and call the list activity
+				Intent listArticlesInFeed = new Intent();
+				listArticlesInFeed.setClass(appCtx, ArticlesList.class);
+				
+				listArticlesInFeed.putExtra("com.vn.newspeak.ArticlesList", mFeed);
+				appCtx.startActivity(listArticlesInFeed);
+
+			} catch (ActivityNotFoundException exception) {
+			Log.e("NewsPaperListAdapter::onClick", exception.getMessage());
+			}
+		}
 	}
 }

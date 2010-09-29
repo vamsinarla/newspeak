@@ -47,14 +47,22 @@ public class NewsPaperTableHandler {
 	
 	public void populateTable() {
 		ContentValues values = new ContentValues();
-		values.put("NewsPaperName", "Wall Street Journal");
-		values.put("Category", "US Business");
-		values.put("FeedURL", "http://online.wsj.com/xml/rss/3_7014.xml");
-		values.put("Subscribed", 0);
 		
 		try {
 			db = appCtx.openOrCreateDatabase(databaseName, Context.MODE_PRIVATE, null);
+
+			values.put("NewsPaperName", "Wall Street Journal");
+			values.put("Category", "US Business");
+			values.put("FeedURL", "http://online.wsj.com/xml/rss/3_7014.xml");
+			values.put("Subscribed", 0);
 			db.insert(tableName, null, values);
+
+			values.put("NewsPaperName", "New York Times");
+			values.put("Category", "Home Page US");
+			values.put("FeedURL", "http://feeds.nytimes.com/nyt/rss/HomePage");
+			values.put("Subscribed", 0);
+			db.insert(tableName, null, values);
+			
 			db.close();
 		} catch(SQLiteException exception) {
 			Log.e("NewsPaperTableHandler::populateTable", "Could not populate the table");
@@ -131,9 +139,10 @@ public class NewsPaperTableHandler {
 					result.moveToNext();
 				}
 				categories.add(category);
+				category = new ArrayList<Feed>();
 			}
 			result.close();
-			db.close	();
+			db.close();
 			
 		} catch (SQLiteException exception) {
 			Log.e("NewsPaperTableHandler::getCategoriesForNewsPapers", "Categories could not be got " + exception.getMessage());
@@ -165,6 +174,18 @@ public class NewsPaperTableHandler {
 			Log.e("NewsPaperTableHandler::updateQuery", "Update checkbox failed" + exception.getMessage());
 		}
 		return numRows == 1 ? true : false;
+	}
+	
+	// DEBUG ONLY :: Remove in release
+	public void deleteTable() {
+		
+		try {
+			db = appCtx.openOrCreateDatabase(databaseName, Context.MODE_PRIVATE, null);
+			db.delete(tableName, null, null);
+			db.close();
+		} catch (SQLiteException exception) {
+			Log.e("deleteTable", exception.getMessage());
+		}
 	}
  	
 }

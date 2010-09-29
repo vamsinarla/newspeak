@@ -4,9 +4,11 @@
     android:layout_width="fill_parent"
     android:layout_height="64px"
     android:gravity="center_vertical">
-    
-    <TextView android:id="@+id/groupText"
-		android:layout_width="fill_parent"
-        android:layout_height="64px" 
-        android:paddingLeft="40sp"/>
+ 
+        <!-- Regular sized buttons -->
+        <Button android:id="@+id/button_normal"
+            android:text="controller"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
 </LinearLayout>

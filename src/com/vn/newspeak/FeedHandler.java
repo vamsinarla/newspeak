@@ -1,7 +1,5 @@
 package com.vn.newspeak;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -10,7 +8,6 @@ import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
 import android.content.Context;
-import android.util.Log;
 
 public class FeedHandler extends DefaultHandler {
 	
@@ -61,12 +58,13 @@ public class FeedHandler extends DefaultHandler {
 			} else if (localName.equalsIgnoreCase(descriptionTag)) {
 				currentArticle.setDescription(builder.toString());
 			} else if (localName.equalsIgnoreCase(pubDateTag)) {
-				SimpleDateFormat dateFormat = new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss Z");
+				// Wed, 22 Sep 2010 21:20:48 EDT
+				/*SimpleDateFormat dateFormat = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss z");
 				try {
 					currentArticle.setDate(dateFormat.parse(builder.toString()));
 				} catch (ParseException e) {
 					Log.e("Handler::endElement", e.getMessage());
-				}
+				}*/
 			} else if (localName.equalsIgnoreCase(itemTag)) {
 				Articles.add(currentArticle);
 			}
@@ -90,3 +88,4 @@ public class FeedHandler extends DefaultHandler {
 		}
 	}
 }
+	

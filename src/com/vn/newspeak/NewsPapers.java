@@ -28,6 +28,15 @@ public class NewsPapers extends ExpandableListActivity {
         	Log.d("NewsPapers::onCreate", "App initialization done");
         }
         
+        /* DEBUG ONLY:: 
+         * Delete and Populate the table again
+         * */
+        // newsPaperTable.deleteTable();
+        // newsPaperTable.populateTable();
+        /* END OF DEBUG ONLY::
+         * 
+         */
+        
         AdapterData data = newsPaperTable.prepareDataForAdapter();
         newsPaperListAdapter.setData(data);
         newsPaperListAdapter.setTableHandler(newsPaperTable);
