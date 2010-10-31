@@ -68,6 +68,7 @@ public class FeedHandler extends DefaultHandler {
 			} else if (localName.equalsIgnoreCase(itemTag)) {
 				Articles.add(currentArticle);
 			}
+			
 			builder.setLength(0);	
 		}
 	}
@@ -85,6 +86,7 @@ public class FeedHandler extends DefaultHandler {
 		super.startElement(uri, localName, name, attributes);
 		if (localName.equalsIgnoreCase(itemTag)){
 			this.currentArticle = new Article();
+			builder.setLength(0);
 		}
 	}
 }

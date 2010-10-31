@@ -7,22 +7,19 @@ import java.util.Locale;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
+import android.app.Activity;
 import android.app.Dialog;
-import android.app.ListActivity;
 import android.app.ProgressDialog;
-import android.content.Context;
+import android.content.ComponentName;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.speech.tts.TextToSpeech;
 import android.util.Log;
-import android.view.Gravity;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.AbsListView;
-import android.widget.BaseAdapter;
-import android.widget.TextView;
+import android.widget.ListView;
 
-public class ArticlesList extends ListActivity implements TextToSpeech.OnInitListener {
+public class ArticlesList extends Activity implements TextToSpeech.OnInitListener {
 	
 	private Feed feed;
 	private List<Article> articles;
@@ -31,11 +28,30 @@ public class ArticlesList extends ListActivity implements TextToSpeech.OnInitLis
 	private final int BUSY_SPINNER_DIALOG = 1; 
 	static private int TTS_INSTALLED_CHECK_CODE = 1;
 	
+	private Article currentArticle;
+	private int currentArticleIndex;
+	
+	private ArticleSpeakService mSpeakService;
+	
+	private ServiceConnection mConnection = new ServiceConnection() {
+		public void onServiceConnected(ComponentName className, IBinder service) {
+			mSpeakService = ((ArticleSpeakService.ArticleSpeakBinder)service).getService();
+		}
+
+		public void onServiceDisconnected(ComponentName name) {
+			mSpeakService = null;
+		}
+		
+		
+	};
+	
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
         
+		setContentView(R.layout.article_list);
+		
 		try {
 			Intent intent = this.getIntent();		
 			Bundle bundle = intent.getExtras();
@@ -47,10 +63,16 @@ public class ArticlesList extends ListActivity implements TextToSpeech.OnInitLis
 				
 				setTitle(feed.getNewsPaper() + " > " + feed.getCategory());
 				
-				processFeed(feed);
-				setListAdapter(new ArticlesListAdapter(this, articles));
+				// Read articles and display as a list
+				readFeedAndFetchArticles(feed);
+				ListView articleList = (ListView) this.findViewById(R.id.articleList);
+				articleList.setAdapter(new ArticleListAdapter(this, articles));
+				
+				currentArticleIndex = 0;
+				currentArticle = articles.get(currentArticleIndex);
+				
 				installAndStartTTSEngine();
-			
+				
 				removeDialog(BUSY_SPINNER_DIALOG);
 				
 				
@@ -63,8 +85,9 @@ public class ArticlesList extends ListActivity implements TextToSpeech.OnInitLis
 		}
 	}
 	
-	protected void processFeed(Feed feed) {
+	protected void readFeedAndFetchArticles(Feed feed) {
 		SAXParserFactory factory = SAXParserFactory.newInstance();
+		articles = null;
 		try {		
 			SAXParser parser = factory.newSAXParser();
 			FeedHandler feedHandler = new FeedHandler(this);
@@ -77,6 +100,7 @@ public class ArticlesList extends ListActivity implements TextToSpeech.OnInitLis
 		}
 	}
 	
+	@Override
 	protected Dialog onCreateDialog(int id) {
 		Dialog dialog;
 		switch (id) {
@@ -119,7 +143,8 @@ public class ArticlesList extends ListActivity implements TextToSpeech.OnInitLis
 		if (status == TextToSpeech.SUCCESS) {
 	           ttsEngine.setLanguage(Locale.US);
 	            
-	           ttsEngine.speak("Hello and welcome to this application ", TextToSpeech.QUEUE_ADD, null);	      	 
+	           ttsEngine.speak("Now reading " + this.feed.getNewsPaper() + "'s " + this.feed.getCategory(), 
+	        		   TextToSpeech.QUEUE_ADD, null);	      	 
 		}
 			
 	}
@@ -132,78 +157,4 @@ public class ArticlesList extends ListActivity implements TextToSpeech.OnInitLis
 		super.onDestroy();
 	}
 	
-	private class ArticlesListAdapter extends BaseAdapter {
-
-		private Context mContext;
-		private List<Article> mArticles;
-		
-		public ArticlesListAdapter(Context context, List<Article> articles) {
-			mContext = context;
-			mArticles = articles; 
-		}
-		
-		@Override
-		public int getCount() {
-			return mArticles.size();
-		}
-
-		@Override
-		public Object getItem(int position) {
-			return mArticles.get(position);
-		}
-
-		@Override
-		public long getItemId(int position) {
-			return position;
-		}
-
-		@Override
-		public View getView(int position, View convertView, ViewGroup parent) {
-			
-			TextView articleView;
-			
-			if (convertView == null) {
-				articleView = new TextView(mContext);
-				
-				AbsListView.LayoutParams params = new AbsListView.LayoutParams(
-		                ViewGroup.LayoutParams.FILL_PARENT, 64);
-	
-				articleView.setGravity(Gravity.CENTER_VERTICAL | Gravity.LEFT);
-				articleView.setPadding(10, 0, 0, 0);
-		        
-				articleView.setLayoutParams(params);
-			} else {
-				articleView = (TextView) convertView;
-			}
-			
-			Article article = (Article) getItem(position);
-			articleView.setText(article.getTitle());
-			articleView.setOnClickListener(new OnItemClickListener(article, mContext));
-			
-			return articleView;
-		}
-		
-		private class OnItemClickListener implements View.OnClickListener {
-
-			private Article article;
-			private Context appCtx;
-			
-			OnItemClickListener(Article article, Context context) {
-				this.article = article;
-				this.appCtx = context;
-			}
-			
-			@Override
-			public void onClick(View v) {
-				Intent articleDisplayIntent = new Intent();
-				
-				articleDisplayIntent.setClass(appCtx, ArticleDisplay.class);
-				articleDisplayIntent.putExtra("com.vn.newspeak.articleURL", article.getURL());
-			
-				// appCtx.startActivity(articleDisplayIntent);
-			}
-			
-		}
-	}
 }
-

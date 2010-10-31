@@ -35,13 +35,11 @@ public class NewsPaperListAdapter extends BaseExpandableListAdapter {
         return true;
     }
 
-	@Override
 	public Object getChild(int groupPosition, int childPosition) {
 		Feed feed = categories.get(groupPosition).get(childPosition);
 		return feed;
 	}
 
-	@Override
 	public long getChildId(int groupPosition, int childPosition) {
 		return childPosition;
 	}
@@ -91,7 +89,6 @@ public class NewsPaperListAdapter extends BaseExpandableListAdapter {
 	    return checkBox;
     } */
 	
-	@Override
 	public View getChildView(int groupPosition, int childPosition,
 			boolean isLastChild, View convertView, ViewGroup parent) {
 				
@@ -105,27 +102,22 @@ public class NewsPaperListAdapter extends BaseExpandableListAdapter {
 		return textView;
 	}
 	
-	@Override
 	public int getChildrenCount(int groupPosition) {
 		return categories.get(groupPosition).size();
 	}
 
-	@Override
 	public Object getGroup(int groupPosition) {
 		return newsPapers.get(groupPosition);
 	}
 
-	@Override
 	public int getGroupCount() {
 		return newsPapers.size();
 	}
 
-	@Override
 	public long getGroupId(int groupPosition) {
 		return groupPosition;
 	}
 
-	@Override
 	public View getGroupView(int groupPosition, boolean isExpanded,
 			View convertView, ViewGroup parent) {
     
@@ -146,7 +138,6 @@ public class NewsPaperListAdapter extends BaseExpandableListAdapter {
 		return i;
 	}
 
-	@Override
 	public boolean isChildSelectable(int groupPosition, int childPosition) {
 		return true;
 	}
@@ -212,7 +203,6 @@ public class NewsPaperListAdapter extends BaseExpandableListAdapter {
 			this.mFeed = feed;
 		}
 		
-		@Override
 		public void onClick(View v) {
 
 			try {

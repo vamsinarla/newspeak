@@ -10,4 +10,6 @@
     <string name="article_date">pubDate</string>
     <string name="article_item">item</string>
     
+<string name="PreviousButtonText">Previous</string>
+<string name="NextButtonText">Next</string>
 </resources>
