@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">NewSpeak</string>
+    <string name="databaseName">NewsPapers</string>
+    <string name="feedsTable">FeedsTable</string>
+    
+    <string name="article_title">titolo</string>
+    <string name="article_description">descrizione</string>
+    <string name="article_link">link</string>
+    <string name="article_date">data pubblicazione</string>
+    <string name="article_item">soggetto</string>
+    
+<string name="PreviousButtonText">Precendete</string>
+<string name="NextButtonText">Successivo</string>
+</resources>
